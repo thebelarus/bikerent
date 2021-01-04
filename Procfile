@@ -1,0 +1,1 @@
+web: gunicorn bikerent.wsgi --log-file -

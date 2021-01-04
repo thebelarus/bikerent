@@ -1,0 +1,131 @@
+{% load leaflet_tags %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>BikeRent - Прокат велосипедов</title>
+    {% load bootstrap4 %}
+
+    {% load bootstrap4 %}
+
+    {% bootstrap_css %}
+    {% bootstrap_javascript jquery='full' %}
+
+
+	{% load static %}
+	{% block css %}
+        <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+
+	{% endblock %}
+	{% block js %}
+
+	{% endblock %}	
+
+	{% load leaflet_tags %}
+
+    {% leaflet_js plugins="forms" %}
+    {% leaflet_css plugins="forms" %}
+
+</head>
+<body>
+	{% block menu %}
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+	    <a class="navbar-brand" href="">Прокат велосипедов</a>
+	    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	    </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">                             
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'get_online_map'%}" >Карта</a>
+                </li>          
+                {% if request.user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'user-trip-list'%}" >Мои поездки</a>
+                </li>                  
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'add_user_trip'%}" >Арендовать велосипед</a>
+                </li>   
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'get_user_profile'%}" >Мой аккаунт</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'get_cash_to_profile'%}" >Пополнить счет</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'get_rates'%}">Рейтинги</a>
+                </li>   
+
+                        
+                <li class="nav-item" id="rent_stop">
+                    <a class="btn btn-danger btn-md active" role="button" aria-pressed="true"  href="{% url 'trip_stop'%}">Закончить аренду</a></td>    
+                    <!-- <a class="nav-link" href="{% url 'get_rates'%}">Рейтинги</a> -->
+                </li>                                                               
+                    {% if perms.core %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              Управление
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{% url 'bike-list'%}">Парк велосипедов</a></li>
+                                <li><a class="dropdown-item" href="{% url 'bike-current-location-list'%}">Текущие координаты велосипедов</a></li>
+                                <li><a class="dropdown-item" href="{% url 'model-list'%}">Модели велосипедов</a></li>
+                                <li><a class="dropdown-item" href="{% url 'brand-list'%}">Бренды велосипедов</a></li>
+                                <li><a class="dropdown-item" href="{% url 'trip-list'%}">Поездки пользователей</a></li>
+                                <li><a class="dropdown-item" href="{% url 'cash_invite_list'%}">Инвайты на пополнение счета</a></li>
+                                <!-- <li><a class="dropdown-item" href="{% url 'brand-add'%}">Клиенты</a></li> -->
+                                <!-- <li><a class="dropdown-item" href="{% url 'base_map'%}">Отзывы на велосипеды</a></li> -->
+                            </ul>
+                        </li>  
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'admin:index' %}" >Администрирование</a>
+                        </li>
+                    {% endif %}
+                {% endif %}
+               
+
+    		</ul>
+
+	    	<ul class="navbar-nav ml-auto">
+	            <li class="nav-item">
+				{% if request.user.is_authenticated %}
+					<a class="nav-link" href="/logout">
+					 <b>{{user.username}}</b>. Баланc: <span id="user_cash_span">{{user.profile.cash}}</span> <img id="nav_icon" src="{% static 'img/coins_icon.png' %}" alt="баланс"/> (Выйти)</a>
+				{% else %}
+					<a class="nav-link" href="/login">
+					Войти(Зарегистрироваться)</a>
+				{% endif %}
+	            </li>
+	        </ul>
+   		</div>
+   </nav>
+    {% endblock %}
+	<div class="container-fluid h-100">
+		{% block content %}
+
+		{% endblock%}	
+	</div>
+    {% if request.user.is_authenticated %}
+    <script>
+        setInterval(function() {
+            $.get( "{% url 'get_base_user_data' %}", function( data ){
+                if (data.is_user_active_rent_present) {
+                    $("#rent_stop").show();
+                }
+                else{
+                    $("#rent_stop").hide();
+                }
+                if (data.user_cash) {
+                    $("#user_cash_span").text(data.user_cash);
+                }
+
+            console.log(data.active)
+        })}, 10000);
+    </script>
+    {% endif %}
+
+    <footer class="footer">
+        <div class="footer-copyright text-center py-3">© 2021 Copyright:
+            <a  href="mailto:thebelarus@gmail.com"> Pavel.R.</a>
+        </div>
+    </footer>       
+</body>

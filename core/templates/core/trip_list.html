@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+
+ <h1 class="h_to_center">{{ label }}</h1>
+    {% if object_list %}
+        <table class="table table-striped">
+        <thead>
+        <tr>
+        	<th>Код поездки:</th>
+            <th>Велосипедист:</th>
+            <th>Велосипед:</th>
+            <th>Проехано метров:</th>
+            <th>Дата начала поездки:</th>
+            <th>Дата окончания поездки:</th>
+            <th>Цена поездки:</th>    
+        	<th>Статус поездки:</th>        	
+        </tr>
+        </thead>
+        <tbody>
+        {% for object in object_list %}
+        <tr>
+            <td>{{ object.id }}</td>
+            <td>{{ object.user }}</td>
+            <td>{{ object.bike }}</td>
+            <td>{{ object.trip.distance }}</td>
+            <td>{{ object.datetime_rent_start }}</td>
+            <td>
+                {% if object.end == False %}
+                    -
+                {% else %}
+                    {{ object.datetime_rent_end }}
+                {% endif %}</td>            
+            <td>{{ object.cost }}</td>                
+            <td>
+                {% if object.end == False %}
+                в пути
+                {% else %}
+                окончена
+                {% endif %}</td>
+            <td><a class="btn btn-warning btn-sm" role="button" aria-pressed="true"  href="{% url 'edit_user_trip' object.id %}">редактировать</a> 
+            <!-- <td><a class="btn btn-warning btn-sm" role="button" aria-pressed="true"  href="{% url 'trip-update' object.id %}">редактировать</a> -->
+            {% if perms.core %}
+             | <a class="btn btn-danger btn-sm" role="button" aria-pressed="true"  href="{% url 'delete_user_trip' object.id %}">удалить</a></td>
+            <!-- <a class="btn btn-danger btn-sm" role="button" aria-pressed="true"  href="{% url 'trip-delete' object.id %}">удалить</a></td> -->
+            {% endif %}
+        </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+	{% else %}
+		    <h1>Список пуст!</h1>
+	{% endif %}
+	<a class="btn btn-primary btn-sm" role="button" aria-pressed="true"  href="{% url 'add_user_trip'%}">Добавить новый элемент</a>  
+{% endblock %}

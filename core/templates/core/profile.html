@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% load static %}
+    <div class="card text-center">
+      <img class="card-img-top mx-auto" id="profile_img" src="{% static 'img/bicycle-rider.svg' %}" alt="Card image cap">
+      <div class="card-body mx-auto">
+        <h4 class="card-title">Ваш профиль:</h5>
+        <p class="card-text">Логин: {{user.username}}</p>
+        <p class="card-text">Почта: {{user.email}}</p>
+        <p class="card-text">Всего пройдено пути: {{context.distance}} метров</p>
+        <p class="card-text">Токенов на счету: {{user.profile.cash}}<img id='nav_icon' src="{% static 'img/coins_icon.png' %}" alt="Card image cap"/></p>
+      </div>
+    </div>
+{% endblock %}

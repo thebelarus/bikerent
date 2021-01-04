@@ -1,0 +1,63 @@
+/*#mapid { height: 180px; }*/
+
+/*#mapid{
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}*/
+
+html, body {
+    height: 100%;
+}
+
+#map
+{
+    min-height: 80%;
+    min-width: 100%;
+    display: block;
+}
+
+html, body
+{
+    height: 100%;
+}
+
+#map-holder{
+    height: 100%;
+}
+
+.fill
+{
+    min-height: 100%;
+    height: 100%;
+    width: 100%;
+    max-width: 100%;
+}
+
+.container{
+    max-width:60em;
+    padding: 0.2em;
+}
+
+#rent_stop
+{
+    display: none;
+}
+#nav_icon
+{
+	height:30px; 
+	width: 30px;
+	margin-left: 5px;
+}
+
+#profile_img
+{
+	height:10%; 
+	width: 10%;
+}
+
+#map_legend_img{
+	height:50%; 
+	/*width: 50%;	*/
+}

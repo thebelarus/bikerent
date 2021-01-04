@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+
+ <h1 class="h_to_center">{{ label }}</h1>
+    {% if object_list %}
+        <table class="table table-striped">
+        <thead>
+        <tr>
+        	<th>Имя:</th>
+            <th>Серийный номер:</th>
+            <th>Бренд:</th>
+            <th>Модель:</th>
+            <th>Исправность:</th>
+        	<th>Управление:</th>        	
+        </tr>
+        </thead>
+        <tbody>
+        {% for object in object_list %}
+        <tr>
+            <td>{{ object.name }}</td>
+            <td>{{ object.vin_code }}</td>
+            <td>{{ object.brand }}</td>
+            <td>{{ object.model }}</td>
+            <td>{{ object.valide_state }}</td>
+            <td><a class="btn btn-warning btn-sm" role="button" aria-pressed="true"  href="{% url 'bike-update' object.id %}">редактировать</a> |
+            <a class="btn btn-danger btn-sm" role="button" aria-pressed="true"  href="{% url 'bike-delete' object.id %}">удалить</a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+	{% else %}
+		    <h1>Список пуст!</h1>
+	{% endif %}
+	<a class="btn btn-primary btn-sm" role="button" aria-pressed="true"  href="{% url 'bike-add'%}">Добавить новый элемент</a>  
+{% endblock %}

@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+{% endblock %}
+
+{% block content %}
+	<div id="map"></div>
+	{% load static %}
+	
+	<script>
+
+var bikeIcon = L.icon({
+    iconUrl: "{% static 'img/bike.png' %}",
+    iconSize:     [40, 40],
+});
+
+var bikeFree = L.icon({
+    iconUrl: "{% static 'img/bike_free.png' %}",
+    iconSize:     [40, 40],
+});
+
+
+var bikeBusy = L.icon({
+    iconUrl: "{% static 'img/bike_busy.png' %}",
+    iconSize:     [40, 40],
+});
+
+
+var bikeBroken = L.icon({
+    iconUrl: "{% static 'img/bike_broken.png' %}",
+    iconSize:     [40, 40],
+});
+var x = document.getElementById("demo");
+step = 0
+var latitude
+var longitude
+
+function getLocation() {
+  
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(drawMap);
+  } else {
+    // x.innerHTML = "Геолокация не поддерживается вашим броузером!";
+  }
+}
+
+function sendLocation() {
+  
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(setLoctation);
+  } else {
+    // x.innerHTML = "Геолокация не поддерживается вашим броузером!";
+  }
+}
+
+getLocation()
+function setLoctation(position) {
+  latitude =  position.coords.latitude
+  longitude = position.coords.longitude
+}
+function drawMap(position){
+mymap = L.map('map').setView([position.coords.latitude, position.coords.longitude], 9);
+marker = L.marker(mymap.getCenter()).addTo(mymap)
+marker.bindPopup("<b>Вы находитесь здесь!</b><br>I am a popup.").openPopup();
+
+L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+  maxZoom: 18,
+  attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+  id: 'mapbox/streets-v11',
+  tileSize: 512,
+  zoomOffset: -1
+}).addTo(mymap);
+}
+
+var myGeoJsonRoute = false;
+
+
+function executeQuery() {
+  sendLocation()
+  $.get( "{% url 'get_bikescurrentlocations_data_for_user' %}", { latitude: latitude, longitude: longitude }, function( data ) {
+    console.log(data)
+
+    geojsonFeature = data
+    if (myGeoJsonRoute != false){
+    	mymap.removeLayer(myGeoJsonRoute);}    
+    myGeoJsonRoute =  L.geoJSON(geojsonFeature,{
+		pointToLayer: function (feature, latlng) {
+			if (feature.properties.valide == true){
+				if(feature.properties.load == true){
+					return L.marker(latlng, {icon: bikeBusy});
+				}
+				else {
+					return L.marker(latlng, {icon: bikeFree});
+				}
+
+			}
+			else {
+				return L.marker(latlng, {icon: bikeBroken});
+			}
+		},
+		onEachFeature: function (feature, layer) {
+			text = '<h4>Велосипед №'+feature.properties.bike+'</h4>'
+			text += 'Расстояние до Вас примерно: ' + feature.properties.distance+ ' км. '
+					text+='<p>свободен!'
+					url = '<a href="../quick/trip/'+feature.properties.pk+'">Арендовать!</a>'
+					text += url
+
+			text += '</p>'
+		    // layer.bindPopup('<h4>Велосипед №'+feature.properties.bike+'</h4><p>Дата: '+feature.properties.datetime+'</p>');
+		    layer.bindPopup(text);
+		  }
+		}    	
+    	)
+    myGeoJsonRoute.addTo(mymap);
+  });     
+  setTimeout(executeQuery, 5000); 
+}
+
+function myclear(){
+  mymap.eachLayer(function (layer) {
+    console.log(layer)
+      mymap.removeLayer(layer);
+  });
+}
+
+function clearMap() {
+  mymap.eachLayer(function(layer){
+      if(layer.myTag && layer.myTag === 'previousLayer'){
+          lmap.removeLayer(layer);
+      }
+  });
+}
+executeQuery()
+</script>
+
+<table class="table">
+<thead>
+<tr>
+<th><img id='map_legend_img' src="{% static 'img/bike_free.png' %}" alt="bike_free"> : Свободный велосипед</th>
+<th><img id='map_legend_img' src="{% static 'img/user_on_map.png' %}" alt="user"> : Ваше месторасположение</th>
+<th>Наш прайс: 1 минута = 1 токен</th>
+</tr>
+</thead>
+</table>
+
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% if most_popular_bikes and most_distance_completed_riders %}
+        <table class="table table-striped">
+
+            <thead>
+            <h2>Лидеры гонять на всю мощь</h2>
+            <tr>
+              <th>Имя:</th>
+              <th>Проехано пути:</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for object in most_distance_completed_riders %}
+                <tr>
+                    <td>{{ object.user__username }}</td>
+                    <td>{{ object.distance }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+
+        <table class="table table-striped">
+
+            <thead>
+            <h2>Самые популярные велосипеды</h2>
+            <tr>
+              <th>Имя:</th>
+              <th>Количество заездов:</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for object in most_popular_bikes %}
+                <tr>
+                    <td>{{ object.bike__bike__name }}</td>
+                    <td>{{ object.count }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+  {% else %}
+        <h1>Рейтинг пуст!</h1>
+  {% endif %}
+{% endblock %}

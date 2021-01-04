@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% load crispy_forms_tags %}
+<p style="color: red">{{ message }}</p>
+<form action="." method="POST" class="uniForm">
+    {% csrf_token %}
+    <table>
+		{{ form|crispy }}
+	    {% csrf_token %}
+    </table>
+    <input type="submit" class="btn btn-primary" value="Отправить">
+</form>
+
+{% endblock %}
